@@ -5,7 +5,7 @@ import { parseStrengthLogCsv } from '../parseCsv';
 import { MUSCLES } from '../types';
 import { SAMPLE_CSV } from './fixture';
 
-const agg = aggregate(parseStrengthLogCsv(SAMPLE_CSV), '8w');
+const agg = aggregate(parseStrengthLogCsv(SAMPLE_CSV), '1m');
 
 describe('SLUG_MUSCLES', () => {
   it('covers every muscle in our taxonomy somewhere', () => {

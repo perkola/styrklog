@@ -33,9 +33,16 @@ ice-cold despite decent frequency because lateral raises are a few kilos, while 
 rarely-trained muscle reads hot off one heavy machine exercise. Set count is what
 answers "what am I neglecting".
 
+**Four time windows:** 1 week, 1 month, this year, 1 year. Three are fixed
+look-back intervals; "this year" is the odd one out, running from 1 January of the
+anchor's year, so its length depends on when in the year you look.
+
 **Windows are anchored to the most recent workout in the file, not to today.** An
 export a few months old would otherwise render an empty map, which looks like a bug
-rather than like stale data. The header always names the anchor date.
+rather than like stale data. The header names both ends of the window.
+
+The per-week divisor never counts weeks that predate your first logged workout, so a
+short export viewed at "1 year" does not read as though fifty weeks had been skipped.
 
 **Two colour scales.** *Relative* divides by your busiest muscle, so the map uses the
 full range and stays readable whatever your training frequency. *Absolute* divides by
@@ -60,7 +67,7 @@ fixtures/sample-export.csv             synthetic test fixture (see Privacy)
 ```
 
 Everything worth trusting lives in `src/core` and is unit-tested without a simulator
-in the loop. `npm test` runs 90 tests against the fixture, including a ground-truth
+in the loop. `npm test` runs 96 tests against the fixture, including a ground-truth
 check on the full 8-week muscle ranking — the expected figures were derived
 independently of the implementation, so the suite catches drift rather than
 re-stating whatever the code happens to do.

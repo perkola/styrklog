@@ -110,7 +110,7 @@ export type MuscleStat = {
   exercises: MuscleExerciseTally[];
 };
 
-export type WindowKey = '4w' | '8w' | '12w' | 'all';
+export type WindowKey = '1w' | '1m' | 'ytd' | '1y';
 
 export type Aggregation = {
   /** Epoch ms of the most recent workout in the file. All windows count back from here. */

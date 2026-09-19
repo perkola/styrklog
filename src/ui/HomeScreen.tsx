@@ -22,9 +22,9 @@ import { RankedList } from './RankedList';
 import { Segmented } from './Segmented';
 import { T } from './tokens';
 
-const WINDOWS = (['4w', '8w', '12w', 'all'] as const).map((key) => ({
+const WINDOWS = (['1w', '1m', 'ytd', '1y'] as const).map((key) => ({
   key,
-  label: key === 'all' ? 'All' : key,
+  label: WINDOW_LABELS[key],
 }));
 
 const MODES: ReadonlyArray<{ key: ScaleMode; label: string }> = [
@@ -42,7 +42,7 @@ const fmtDate = (ms: number) =>
 export function HomeScreen() {
   const [sets, setSets] = useState<SetRow[] | null>(null);
   const [fileName, setFileName] = useState('');
-  const [windowKey, setWindowKey] = useState<WindowKey>('8w');
+  const [windowKey, setWindowKey] = useState<WindowKey>('1m');
   const [mode, setMode] = useState<ScaleMode>('relative');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,10 +93,11 @@ export function HomeScreen() {
   }
 
   const coverageCount = aggregation.unmapped.length + aggregation.inferred.length;
-  const windowLabel =
-    windowKey === 'all'
-      ? `${fmtDate(aggregation.windowStart)} – ${fmtDate(aggregation.anchor)}`
-      : `${WINDOW_LABELS[windowKey]} to ${fmtDate(aggregation.anchor)}`;
+  // Spell out both ends: the window is anchored to the last workout in the
+  // file, not to today, and that is surprising unless the dates are visible.
+  const windowLabel = `${WINDOW_LABELS[windowKey]} · ${fmtDate(
+    aggregation.windowStart,
+  )} – ${fmtDate(aggregation.anchor)}`;
 
   const onPressMuscle = (side: BodySide, slug: string) => {
     const stats = musclesForSlug(aggregation, side, slug);

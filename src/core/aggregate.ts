@@ -13,19 +13,48 @@ import {
 
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
 
-export const WINDOW_WEEKS: Record<WindowKey, number | null> = {
-  '4w': 4,
-  '8w': 8,
-  '12w': 12,
-  all: null,
+export const WINDOW_LABELS: Record<WindowKey, string> = {
+  '1w': '1 week',
+  '1m': '1 month',
+  ytd: 'This year',
+  '1y': '1 year',
 };
 
-export const WINDOW_LABELS: Record<WindowKey, string> = {
-  '4w': '4 weeks',
-  '8w': '8 weeks',
-  '12w': '12 weeks',
-  all: 'All time',
-};
+/**
+ * Step back `months` calendar months, clamping the day of month.
+ *
+ * Plain setMonth overflows — 31 March minus one month lands in early March,
+ * because 31 February does not exist — which would silently widen the window.
+ */
+function monthsBefore(ms: number, months: number): number {
+  const d = new Date(ms);
+  const day = d.getDate();
+  d.setMonth(d.getMonth() - months);
+  if (d.getDate() !== day) d.setDate(0);
+  return d.getTime();
+}
+
+/**
+ * Where a window starts, counting back from the file's most recent workout.
+ *
+ * Three of these are fixed look-back intervals. `ytd` is the odd one out: it
+ * runs from 1 January of the anchor's year, so its length depends on when in
+ * the year you are looking.
+ */
+function windowStartFor(anchor: number, window: WindowKey): number {
+  switch (window) {
+    case '1w':
+      return anchor - 7 * 24 * 60 * 60 * 1000;
+    case '1m':
+      return monthsBefore(anchor, 1);
+    case '1y':
+      return monthsBefore(anchor, 12);
+    case 'ytd': {
+      const d = new Date(anchor);
+      return new Date(d.getFullYear(), 0, 1).getTime();
+    }
+  }
+}
 
 /**
  * A set counts toward volume when it isn't a warm-up and represents actual
@@ -58,18 +87,14 @@ export function aggregate(sets: SetRow[], window: WindowKey): Aggregation {
     Number.POSITIVE_INFINITY,
   );
 
-  const nominalWeeks = WINDOW_WEEKS[window];
-  const windowStart =
-    nominalWeeks == null ? earliest : anchor - nominalWeeks * MS_PER_WEEK;
+  const windowStart = windowStartFor(anchor, window);
+  const nominalWeeks = (anchor - windowStart) / MS_PER_WEEK;
 
   // Don't divide by weeks that predate the first workout ever logged: a
-  // two-week-old export viewed at "12 weeks" would otherwise read as though
-  // ten weeks of training had been skipped.
+  // two-week-old export viewed at "1 year" would otherwise read as though
+  // fifty weeks of training had been skipped.
   const dataSpanWeeks = Math.max(1, (anchor - earliest) / MS_PER_WEEK);
-  const weeks =
-    nominalWeeks == null
-      ? dataSpanWeeks
-      : Math.max(1, Math.min(nominalWeeks, dataSpanWeeks));
+  const weeks = Math.max(1, Math.min(nominalWeeks, dataSpanWeeks));
 
   const inWindow = sets.filter((s) => s.workoutStart >= windowStart);
   const workouts = new Set(inWindow.map((s) => s.workoutStart)).size;
@@ -150,7 +175,7 @@ export function aggregate(sets: SetRow[], window: WindowKey): Aggregation {
 
   return {
     anchor,
-    windowStart: nominalWeeks == null ? earliest : windowStart,
+    windowStart,
     weeks,
     workouts,
     workingSets,
