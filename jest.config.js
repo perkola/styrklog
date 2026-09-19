@@ -4,7 +4,6 @@
  */
 module.exports = {
   testEnvironment: 'node',
-  transform: { '^.+\\.[jt]sx?$': 'babel-jest' },
   testMatch: ['**/__tests__/**/*.test.ts'],
   collectCoverageFrom: ['src/core/**/*.ts'],
 };
