@@ -34,9 +34,8 @@ export function BodyHeatMap({ aggregation, mode, onPressMuscle }: Props) {
     <View style={styles.row}>
       {(['front', 'back'] as const).map((side) => (
         <View key={side} style={styles.column}>
-          {/* onBodyPartPress carries the tap on native; BodyTapLayer carries it
-              on web, where that prop cannot fire. Only one is live per platform,
-              so a tap is never handled twice. */}
+          {/* The library's onBodyPartPress cannot fire under react-native-web;
+              BodyTapLayer handles taps instead. */}
           <BodyTapLayer onSlugPress={(slug) => onPressMuscle(side, slug)}>
             <Body
               side={side}
@@ -47,9 +46,6 @@ export function BodyHeatMap({ aggregation, mode, onPressMuscle }: Props) {
               // Typing the array as the library's own ExtendedBodyPart makes
               // TypeScript reject any slug that has drifted from its Slug union.
               data={buildBodyData(aggregation, side, mode) as ExtendedBodyPart[]}
-              onBodyPartPress={(part) => {
-                if (part.slug) onPressMuscle(side, part.slug);
-              }}
             />
           </BodyTapLayer>
           <Text style={styles.caption}>{side === 'front' ? 'Front' : 'Back'}</Text>

@@ -4,7 +4,7 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 
 # Styrklog
 
-Offline Expo (React Native + web) app: imports a StrengthLog CSV and renders a muscle
+Offline web app (Expo / React Native Web, deployed as a home-screen PWA): imports a StrengthLog CSV and renders a muscle
 heat map. See `README.md` for behaviour and deployment.
 
 ## Commands
@@ -22,7 +22,7 @@ Run tests and typecheck before finishing a change.
   - `exerciseMuscleMap.ts` exercise → muscles
   - `aggregate.ts` sets + window → sets/week per muscle
   - `colorScale.ts`, `bodySlugs.ts` values → colours and renderer slugs
-- `src/ui/` — React Native components. `*.web.tsx` files are web-only overrides.
+- `src/ui/` — React Native components, rendered in the browser via react-native-web.
 - `scripts/` — fixture, icon and web-build generators.
 
 ## Rules
@@ -44,5 +44,5 @@ Run tests and typecheck before finishing a change.
 - Exercise names use U+2019 apostrophes; normalise before lookup.
 - `react-native-body-highlighter` ignores `defaultFill`; uncoloured regions render near
   black, so `bodySlugs.ts` colours decorative slugs explicitly.
-- `expo-file-system`'s `File` API is native-only; web imports go through `fetch`.
+- The web target only: no native build. Picked files are read with `fetch` on the blob URL.
 - Web builds must be served from the domain root (absolute `/_expo/...` paths).

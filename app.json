@@ -6,15 +6,12 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "ios": {
-      "bundleIdentifier": "com.styrklog.app"
-    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-asset"
-    ],
-    "description": "Muscle heat map for StrengthLog CSV exports"
+    "description": "Muscle heat map for StrengthLog CSV exports",
+    "platforms": [
+      "web"
+    ]
   }
 }

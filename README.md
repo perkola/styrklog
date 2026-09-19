@@ -9,14 +9,10 @@ no analytics, no persistence.
 ## Development
 
 ```bash
-npm start          # Expo; press i for the iOS Simulator
-npm run web        # same app in a browser
+npm start          # Expo dev server, opens in the browser
 npm test           # unit tests
 npm run typecheck
 ```
-
-Tapping a muscle on the body does not work in the browser (react-native-svg's `onPress`
-isn't wired up by react-native-web); use the ranked list to reach the same drill-down.
 
 ## How it works
 
