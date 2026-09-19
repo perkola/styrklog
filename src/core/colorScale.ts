@@ -1,26 +1,27 @@
 /**
  * Colour for the muscle fills.
  *
- * Both scale modes use the SAME single-hue sequential blue ramp and differ only
+ * Both scale modes use the SAME sequential blue-to-purple ramp and differ only
  * in what anchors the top of the scale. This is a deliberate departure from the
  * original sketch, which had the absolute mode use a diverging ramp with a
  * neutral midpoint for "optimal": a grey midpoint would have collided head-on
  * with the grey that means "never trained", making the map's single most
  * important distinction — worked a little vs. not worked at all — unreadable.
- * Volume is a magnitude, not a polarity, so one hue is also the correct form.
+ * Volume is a magnitude, not a polarity, so one continuous ramp is also the correct form.
  * The legend annotates the volume landmarks in absolute mode instead.
  *
- * Ramp steps 250-650 of the reference blue ramp. Validated as an ordinal ramp
- * (monotone lightness, visible step gaps, single hue, light end 2.06:1 against
- * the surface). The light end deliberately respects the stricter ordinal floor
- * rather than the sequential one so that the coldest *trained* muscle still
- * reads as blue rather than fading into the "no data" grey.
+ * The ramp runs from a pale, white-tinted blue through blue and indigo to a deep
+ * purple. Its six anchors are spaced at equal steps of CIELAB lightness (L* 84 ->
+ * 14, 14 apiece), so equal changes in sets/week look like equal changes in shade
+ * and little / medium / heavy training stay distinguishable. The light end is a
+ * clearly blue-tinted step darker than the "no data" grey, so the coldest
+ * *trained* muscle never reads as untrained.
  */
 
 export type ScaleMode = 'relative' | 'absolute';
 
 /** Ramp anchors, light -> dark. */
-const RAMP = ['#86b6ef', '#5598e7', '#2a78d6', '#1c5cab', '#104281'] as const;
+const RAMP = ['#a7d7fe', '#4bb3fd', '#0f8cdb', '#0661c4', '#3c3492', '#2b1753'] as const;
 
 /**
  * A muscle with no logged sets. Distinct from the bottom of the ramp on purpose:

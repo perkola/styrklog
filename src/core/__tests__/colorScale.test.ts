@@ -50,9 +50,22 @@ describe('sampleRamp', () => {
     }
   });
 
+  it('steps evenly in perceived lightness (CIELAB L*)', () => {
+    const lstar = (hex: string) => {
+      const n = parseInt(hex.slice(1), 16);
+      const lin = (c: number) => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+      const y = 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+      return y > 0.008856 ? 116 * Math.cbrt(y) - 16 : 903.3 * y;
+    };
+    const samples = Array.from({ length: 11 }, (_, i) => lstar(sampleRamp(i / 10)));
+    const steps = samples.slice(1).map((v, i) => samples[i] - v);
+    const mean = steps.reduce((a, b) => a + b, 0) / steps.length;
+    for (const step of steps) expect(Math.abs(step - mean)).toBeLessThan(mean * 0.15);
+  });
+
   it('returns the validated ramp endpoints', () => {
-    expect(sampleRamp(0)).toBe('#86b6ef');
-    expect(sampleRamp(1)).toBe('#104281');
+    expect(sampleRamp(0)).toBe('#a7d7fe');
+    expect(sampleRamp(1)).toBe('#2b1753');
   });
 
   it('clamps out-of-range input', () => {
