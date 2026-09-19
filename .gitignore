@@ -39,3 +39,13 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Expo export output
+dist-export/
+
+# Intermediate icon artefacts (the used copies live in public/icons)
+web/
+
+# Real StrengthLog exports are personal data — never commit them.
+fixtures/*.csv
+!fixtures/sample-export.csv
