@@ -44,6 +44,40 @@ describe('resolveExercise', () => {
     expect(resolveExercise('Underwater Basket Weaving')).toBeNull();
   });
 
+  describe('exercises from the 90-day export, added to the table', () => {
+    it.each([
+      ['Bench Press', [['chest', 1], ['triceps', 0.5], ['front-delts', 0.5]]],
+      ['Dumbbell Chest Press', [['chest', 1], ['triceps', 0.5], ['front-delts', 0.5]]],
+      // Flys are isolation work: chest + a little front-delt, no triceps —
+      // unlike a press, which the generic heuristic would otherwise imply.
+      ['Cable Incline Chest Fly', [['chest', 1], ['front-delts', 0.5]]],
+      ['Standing Cable Chest Fly (Lower Position)', [['chest', 1], ['front-delts', 0.5]]],
+      // Incline presses load front delts as a second primary mover.
+      ['Incline Bench Press', [['chest', 1], ['front-delts', 1], ['triceps', 0.5]]],
+      ['Overhead Press', [['front-delts', 1], ['side-delts', 0.5], ['triceps', 0.5]]],
+      [
+        'Seated Dumbbell Shoulder Press',
+        [['front-delts', 1], ['side-delts', 0.5], ['triceps', 0.5]],
+      ],
+      // A wrist-flexion isolation move, not a biceps curl — the generic
+      // \bcurl\b heuristic would mismap this without a table entry.
+      ['Dumbbell Wrist Curl', [['forearms', 1]]],
+      ['Good Morning', [['hamstrings', 1], ['glutes', 1], ['lower-back', 0.5]]],
+      [
+        'Smith Machine Romanian Deadlift',
+        [['hamstrings', 1], ['glutes', 1], ['lower-back', 0.5]],
+      ],
+      ['Standing Calf Raise', [['calves', 1]]],
+      ['One-Legged Glute Bridge', [['glutes', 1], ['hamstrings', 0.5]]],
+    ] as const)('%s', (name, expected) => {
+      const r = resolveExercise(name);
+      expect(r?.inferred).toBe(false);
+      expect(r?.contributions).toEqual(
+        expected.map(([muscle, weight]) => ({ muscle, weight })),
+      );
+    });
+  });
+
   describe('heuristic fallback for exercises added later', () => {
     it.each([
       ['Standing Leg Curl', 'hamstrings'],
@@ -51,7 +85,7 @@ describe('resolveExercise', () => {
       ['Machine Lateral Raise', 'side-delts'],
       ['Barbell Shrug', 'traps'],
       ['Preacher Curl', 'biceps'],
-      ['Incline Bench Press', 'chest'],
+      ['Decline Bench Press', 'chest'],
       ['Bulgarian Split Squat', 'quads'],
       ['T-Bar Row', 'lats'],
     ])('%s -> %s', (name, expectedPrimary) => {
