@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -16,6 +16,7 @@ import { MUSCLE_LABELS, type MuscleStat, type SetRow, type WindowKey } from '../
 import { BodyHeatMap } from './BodyHeatMap';
 import { CoverageSheet } from './CoverageSheet';
 import { pickAndParseCsv } from './importCsv';
+import { loadLastImport } from './lastImport';
 import { Legend } from './Legend';
 import { MuscleDetailSheet } from './MuscleDetailSheet';
 import { RankedList } from './RankedList';
@@ -40,8 +41,14 @@ const fmtDate = (ms: number) =>
   });
 
 export function HomeScreen() {
-  const [sets, setSets] = useState<SetRow[] | null>(null);
-  const [fileName, setFileName] = useState('');
+  // Seed from the cached last import, if any, instead of starting empty.
+  // The ref makes sure loadLastImport() — a JSON.parse plus a full CSV parse
+  // — runs exactly once per mount, not once per useState initializer below.
+  const cachedRef = useRef<ReturnType<typeof loadLastImport> | undefined>(undefined);
+  if (cachedRef.current === undefined) cachedRef.current = loadLastImport();
+
+  const [sets, setSets] = useState<SetRow[] | null>(() => cachedRef.current?.sets ?? null);
+  const [fileName, setFileName] = useState(() => cachedRef.current?.fileName ?? '');
   const [windowKey, setWindowKey] = useState<WindowKey>('1m');
   const [mode, setMode] = useState<ScaleMode>('relative');
   const [busy, setBusy] = useState(false);

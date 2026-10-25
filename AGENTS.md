@@ -30,7 +30,10 @@ Run tests and typecheck before finishing a change.
 - **Never commit personal data.** The repo is public. Real exports go in `fixtures/` and
   are gitignored; only the synthetic `fixtures/sample-export.csv` is tracked. Don't add
   keys, tokens or workout data anywhere.
-- Keep the app offline: no backend, network calls, analytics or persistence.
+- Keep the app offline: no backend, network calls, or analytics. The only
+  persistence is a localStorage cache of the last imported CSV, so a reload
+  doesn't lose your file — nothing else is stored and nothing leaves the
+  device.
 - Keep logic in `src/core` and add tests there for any behaviour change.
 - Time windows anchor to the latest workout in the file, never `Date.now()`.
 - To support a new exercise, add a row to the table in `exerciseMuscleMap.ts`; the tests

@@ -2,6 +2,7 @@ import * as DocumentPicker from 'expo-document-picker';
 
 import { parseStrengthLogCsv } from '../core/parseCsv';
 import type { SetRow } from '../core/types';
+import { saveLastImport } from './lastImport';
 
 /**
  * CSV exported from the Files app arrives under inconsistent types — sometimes
@@ -30,5 +31,10 @@ export async function pickAndParseCsv(): Promise<ImportResult | null> {
   // On web the picker hands back a blob: URL, which fetch reads directly.
   const response = await fetch(asset.uri);
   if (!response.ok) throw new Error(`Could not read the file (${response.status}).`);
-  return { sets: parseStrengthLogCsv(await response.text()), fileName: asset.name };
+  const text = await response.text();
+  const sets = parseStrengthLogCsv(text);
+  // Save only now that parsing succeeded — a bad file should never clobber a
+  // good cached one.
+  saveLastImport(asset.name, text);
+  return { sets, fileName: asset.name };
 }
