@@ -7,6 +7,10 @@ Fully client-side: the CSV is parsed in memory and never leaves the device. No b
 no analytics. The only persistence is a localStorage cache of the last import, so
 reopening the app doesn't lose your file.
 
+<img src="docs/screenshot.png" alt="Styrklog on a phone: a month of training volume as a front/back muscle heat map, with the ranked per-muscle list below it" width="280">
+
+*Rendered from the synthetic `fixtures/sample-export.csv`, not real training data.*
+
 ## Development
 
 ```bash
